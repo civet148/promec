@@ -6,6 +6,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
+	"sync"
 )
 
 const (
@@ -13,12 +14,13 @@ const (
 )
 
 type PromeClient struct {
-	metrics chan prometheus.Metric
+	locker  sync.RWMutex
+	metrics map[string][]prometheus.Metric
 }
 
 func NewPromeClient() *PromeClient {
 	m := &PromeClient{
-		metrics: make(chan prometheus.Metric, 1000),
+		metrics: make(map[string][]prometheus.Metric),
 	}
 	err := prometheus.Register(m)
 	if err != nil {
@@ -44,17 +46,25 @@ func (m *PromeClient) Describe(ch chan<- *prometheus.Desc) {
 
 // Collect DO NOT USE THIS FUNCTION
 func (m *PromeClient) Collect(ch chan<- prometheus.Metric) {
-	select {
-	case metric := <-m.metrics:
-		ch <- metric
-	default:
-
+	m.locker.RLock()
+	defer m.locker.RUnlock()
+	for _, ms := range m.metrics {
+		for _, v := range ms {
+			ch <- v
+		}
 	}
 }
 
 // WriteMetric write metric to prometheus buffer
-func (m *PromeClient) WriteMetric(metric prometheus.Metric) {
-	m.metrics <- metric
+func (m *PromeClient) WriteMetric(strMetricKey string, metrics ...prometheus.Metric) {
+	m.locker.Lock()
+	defer m.locker.Unlock()
+	ms := m.metrics[strMetricKey]
+	if len(ms) != 0 {
+		ms = nil
+	}
+	ms = append(ms, metrics...)
+	m.metrics[strMetricKey] = ms
 }
 
 // InitRouter init prometheus router
