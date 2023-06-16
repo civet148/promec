@@ -48,24 +48,23 @@ func (m *Metric) NewConstMetricGauge(obj MetricStruct, value float64) prometheus
 	return prometheus.MustNewConstMetric(desc, prometheus.GaugeValue, value, values...)
 }
 
-//
-//func (m *Metric) NewConstMetricCounter(obj MetricStruct, value float64) prometheus.Metric {
-//	labels, values := m.parseLabels(obj)
-//	if len(labels) == 0 {
-//		return nil
-//	}
-//	desc := m.newPrometheusDesc(labels...)
-//	return prometheus.MustNewConstMetric(desc, prometheus.CounterValue, value, values...)
-//}
-//
-//func (m *Metric) NewConstMetricUntyped(obj MetricStruct, value float64) prometheus.Metric {
-//	labels, values := m.parseLabels(obj)
-//	if len(labels) == 0 {
-//		return nil
-//	}
-//	desc := m.newPrometheusDesc(labels...)
-//	return prometheus.MustNewConstMetric(desc, prometheus.UntypedValue, value, values...)
-//}
+func (m *Metric) NewConstMetricCounter(obj MetricStruct, value float64) prometheus.Metric {
+	labels, values := m.parseLabels(obj)
+	if len(labels) == 0 {
+		return nil
+	}
+	desc := m.newPrometheusDesc(labels...)
+	return prometheus.MustNewConstMetric(desc, prometheus.CounterValue, value, values...)
+}
+
+func (m *Metric) NewConstMetricUntyped(obj MetricStruct, value float64) prometheus.Metric {
+	labels, values := m.parseLabels(obj)
+	if len(labels) == 0 {
+		return nil
+	}
+	desc := m.newPrometheusDesc(labels...)
+	return prometheus.MustNewConstMetric(desc, prometheus.UntypedValue, value, values...)
+}
 
 func (m *Metric) parseLabels(obj MetricStruct) (labels, values []string) {
 	typ := reflect.TypeOf(obj)
