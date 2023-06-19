@@ -43,8 +43,7 @@ func (m *MetricInfo) newPrometheusDesc(labels ...string) *prometheus.Desc {
 func (m *MetricInfo) newConstMetric(valueType prometheus.ValueType, obj LabelObject, value float64) Metrics {
 	labelNames, labelValues := parseLabels(obj)
 	desc := m.newPrometheusDesc(labelNames...)
-	metric := prometheus.MustNewConstMetric(desc, valueType, value, labelValues...)
-	return newConstMetric(m.Name(), metric, labelNames, labelValues)
+	return newConstMetric(m.Name(), valueType, desc, value, labelNames, labelValues)
 }
 
 func (m *MetricInfo) NewConstMetricGauge(obj LabelObject, value float64) Metrics {
