@@ -7,6 +7,10 @@ import (
 )
 
 func parseLabels(obj LabelObject) (labels, values []string) {
+
+	if obj == nil {
+		return
+	}
 	typ := reflect.TypeOf(obj)
 	val := reflect.ValueOf(obj)
 
