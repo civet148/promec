@@ -9,15 +9,17 @@ import (
 )
 
 type Metrics interface {
-	Key() string
-	Set(value float64)
-	Metric() prometheus.Metric
+	Key() string               //metric key
+	Get() float64              //get metric value
+	Set(value float64)         //set metric value
+	Metric() prometheus.Metric //get metric object
 }
 
 type ConstMetric struct {
 	name        string
 	labelNames  []string
 	labelValues []string
+	value       float64
 	vt          prometheus.ValueType
 	desc        *prometheus.Desc
 	locker      sync.RWMutex
@@ -34,6 +36,7 @@ func newConstMetric(name string, vt prometheus.ValueType, desc *prometheus.Desc,
 		name:        name,
 		desc:        desc,
 		vt:          vt,
+		value:       value,
 		metric:      metric,
 		labelNames:  labelNames,
 		labelValues: labelValues,
@@ -56,9 +59,16 @@ func (m *ConstMetric) Metric() prometheus.Metric {
 	return m.metric
 }
 
+func (m *ConstMetric) Get() float64 {
+	m.locker.RLock()
+	defer m.locker.RUnlock()
+	return m.value
+}
+
 func (m *ConstMetric) Set(value float64) {
 	m.locker.Lock()
 	defer m.locker.Unlock()
+	m.value = value
 	metric := prometheus.MustNewConstMetric(m.desc, m.vt, value, m.labelValues...)
 	m.metric = metric
 }
