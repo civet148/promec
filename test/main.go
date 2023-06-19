@@ -54,7 +54,7 @@ func CommitMetrics(c *promec.PromeClient) {
 	gaugeLabels[gls] = 1
 	gaugeLabels[gls2] = 1
 	var metrics []promec.Metrics
-	for _, value := range gaugeLabels {
+	for obj, value := range gaugeLabels {
 		g := mi.NewConstMetricGauge(obj, value)
 		metrics = append(metrics, g)
 	}
