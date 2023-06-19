@@ -20,9 +20,6 @@ type ConstMetric struct {
 }
 
 func newConstMetric(name string, metric prometheus.Metric, labelNames, labelValues []string) *ConstMetric {
-	if len(labelNames) == 0 || len(labelValues) == 0 {
-		log.Panic("nil labels or values")
-	}
 	if len(labelNames) != len(labelValues) {
 		log.Panic("label and value size not equal")
 	}
