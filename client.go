@@ -15,12 +15,12 @@ const (
 
 type PromeClient struct {
 	locker  sync.RWMutex
-	metrics map[string][]prometheus.Metric
+	metrics map[string]Metrics
 }
 
 func NewPromeClient() *PromeClient {
 	m := &PromeClient{
-		metrics: make(map[string][]prometheus.Metric),
+		metrics: make(map[string]Metrics),
 	}
 	err := prometheus.Register(m)
 	if err != nil {
@@ -48,23 +48,28 @@ func (m *PromeClient) Describe(ch chan<- *prometheus.Desc) {
 func (m *PromeClient) Collect(ch chan<- prometheus.Metric) {
 	m.locker.RLock()
 	defer m.locker.RUnlock()
-	for _, ms := range m.metrics {
-		for _, v := range ms {
-			ch <- v
-		}
+	for _, v := range m.metrics {
+		ch <- v.Metric()
 	}
 }
 
 // WriteMetric write metric to prometheus buffer
-func (m *PromeClient) WriteMetric(strMetricKey string, metrics ...prometheus.Metric) {
+func (m *PromeClient) WriteMetrics(metrics ...Metrics) {
 	m.locker.Lock()
 	defer m.locker.Unlock()
-	ms := m.metrics[strMetricKey]
-	if len(ms) != 0 {
-		ms = nil
+	for _, v := range metrics {
+		m.metrics[v.Key()] = v
+		log.Debugf("save metric key [%s]", v.Key())
 	}
-	ms = append(ms, metrics...)
-	m.metrics[strMetricKey] = ms
+}
+
+// CleanMetric clean metrics buffer
+func (m *PromeClient) CleanMetrics() {
+	m.locker.Lock()
+	defer m.locker.Unlock()
+	for _, v := range m.metrics {
+		delete(m.metrics, v.Key())
+	}
 }
 
 // InitRouter init prometheus router
