@@ -36,14 +36,13 @@ func main() {
 
 func CommitConstMetrics(c *promec.PromeClient) {
 	/*
-		$ curl 127.0.0.1:8088/metrics | grep golang
+		$ curl 127.0.0.1:8088/metrics | grep golang | grep -vE "HELP"
 		  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
 		                                 Dload  Upload   Total   Spent    Left  Speed
-		100  6151    0  6151    0     0  6006k      0 --:--:-- --:--:-- --:--:-- 6006k
-		# HELP golang_prometheus_performance
-		# TYPE golang_prometheus_performance gauge
-		golang_prometheus_performance{cpu_usage="0.6",memory_usage="0.913",program="program1"} 1
-		golang_prometheus_performance{cpu_usage="0.7",memory_usage="0.03",program="program2"} 1
+		100  6699    0  6699    0     0  6541k      0 --:--:-- --:--:-- --:--:-- 6541k
+		# TYPE golang_prometheus_gauge gauge
+		golang_prometheus_gauge{cpu_usage="0.6",memory_usage="0.913",program="program1"} 1
+		golang_prometheus_gauge{cpu_usage="0.7",memory_usage="0.03",program="program2"} 1
 	*/
 	mi := promec.NewMetricInfo(NameSpace, SubSystem, MetricNameGauge, HelpName)
 	gaugeLabels := make(map[*GaugeLabels]float64)
