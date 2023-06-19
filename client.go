@@ -22,10 +22,7 @@ func NewPromeClient() *PromeClient {
 	m := &PromeClient{
 		metrics: make(map[string]Metrics),
 	}
-	err := prometheus.Register(m)
-	if err != nil {
-		log.Errorf(err.Error())
-	}
+	prometheus.MustRegister(m)
 	return m
 }
 

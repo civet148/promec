@@ -57,3 +57,12 @@ func (m *MetricInfo) NewConstMetricCounter(obj LabelObject, value float64) *Cons
 func (m *MetricInfo) NewConstMetricUntyped(obj LabelObject, value float64) *ConstMetric {
 	return m.newConstMetric(prometheus.UntypedValue, obj, value)
 }
+
+// NewConstHistogram creates a new histogram
+// count: total count of sampling
+// sum: total sum of sampling
+func (m *MetricInfo) NewConstHistogram(obj LabelObject, count uint64, sum float64, buckets map[float64]uint64) *ConstHistogram {
+	labelNames, labelValues := parseLabels(obj)
+	desc := m.newPrometheusDesc(labelNames...)
+	return newConstHistogram(m.Name(), desc, count, sum, buckets, labelNames, labelValues)
+}
