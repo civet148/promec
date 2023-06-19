@@ -40,20 +40,20 @@ func (m *MetricInfo) newPrometheusDesc(labels ...string) *prometheus.Desc {
 	return prometheus.NewDesc(strFQName, m.Help, labels, nil)
 }
 
-func (m *MetricInfo) newConstMetric(valueType prometheus.ValueType, obj LabelObject, value float64) Metrics {
+func (m *MetricInfo) newConstMetric(valueType prometheus.ValueType, obj LabelObject, value float64) *ConstMetric {
 	labelNames, labelValues := parseLabels(obj)
 	desc := m.newPrometheusDesc(labelNames...)
 	return newConstMetric(m.Name(), valueType, desc, value, labelNames, labelValues)
 }
 
-func (m *MetricInfo) NewConstMetricGauge(obj LabelObject, value float64) Metrics {
+func (m *MetricInfo) NewConstMetricGauge(obj LabelObject, value float64) *ConstMetric {
 	return m.newConstMetric(prometheus.GaugeValue, obj, value)
 }
 
-func (m *MetricInfo) NewConstMetricCounter(obj LabelObject, value float64) Metrics {
+func (m *MetricInfo) NewConstMetricCounter(obj LabelObject, value float64) *ConstMetric {
 	return m.newConstMetric(prometheus.CounterValue, obj, value)
 }
 
-func (m *MetricInfo) NewConstMetricUntyped(obj LabelObject, value float64) Metrics {
+func (m *MetricInfo) NewConstMetricUntyped(obj LabelObject, value float64) *ConstMetric {
 	return m.newConstMetric(prometheus.UntypedValue, obj, value)
 }

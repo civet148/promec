@@ -69,6 +69,30 @@ func (m *ConstMetric) Set(value float64) {
 	m.locker.Lock()
 	defer m.locker.Unlock()
 	m.value = value
-	metric := prometheus.MustNewConstMetric(m.desc, m.vt, value, m.labelValues...)
-	m.metric = metric
+	m.renewMetricNoLock()
+}
+
+func (m *ConstMetric) Add(value float64) {
+	m.locker.Lock()
+	defer m.locker.Unlock()
+	m.value += value
+	m.renewMetricNoLock()
+}
+
+func (m *ConstMetric) Inc() {
+	m.locker.Lock()
+	defer m.locker.Unlock()
+	m.value += 1
+	m.renewMetricNoLock()
+}
+
+func (m *ConstMetric) Dec() {
+	m.locker.Lock()
+	defer m.locker.Unlock()
+	m.value -= 1
+	m.renewMetricNoLock()
+}
+
+func (m *ConstMetric) renewMetricNoLock() {
+	m.metric = prometheus.MustNewConstMetric(m.desc, m.vt, m.value, m.labelValues...)
 }
