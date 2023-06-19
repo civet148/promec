@@ -59,7 +59,6 @@ func (m *PromeClient) WriteMetrics(metrics ...Metrics) {
 	defer m.locker.Unlock()
 	for _, v := range metrics {
 		m.metrics[v.Key()] = v
-		log.Debugf("save metric key [%s]", v.Key())
 	}
 }
 
