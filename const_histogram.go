@@ -46,21 +46,13 @@ func (m *ConstHistogram) Key() string {
 	return strKey
 }
 
-func (m *ConstHistogram) Get() float64 {
-	return m.sum
-}
-
-func (m *ConstHistogram) Set(value float64) {
-	m.sum = value
-}
-
 func (m *ConstHistogram) Metric() prometheus.Metric {
 	m.locker.Lock()
 	defer m.locker.Unlock()
 	return m.metric
 }
 
-func (m *ConstHistogram) Update(count uint64, sum float64, buckets map[float64]uint64) {
+func (m *ConstHistogram) Set(count uint64, sum float64, buckets map[float64]uint64) {
 	m.locker.Lock()
 	defer m.locker.Unlock()
 	m.sum = sum

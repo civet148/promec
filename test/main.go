@@ -98,6 +98,6 @@ func CommitConstHistogram(c *promec.PromeClient) {
 
 	//go func() {
 	//	time.Sleep(15 * time.Second)
-	//	histo.Update(200, 309.5, buckets)
+	//	histo.Set(200, 309.5, buckets)
 	//}()
 }

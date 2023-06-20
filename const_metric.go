@@ -10,8 +10,6 @@ import (
 
 type Metrics interface {
 	Key() string               //metric key
-	Get() float64              //get metric value
-	Set(value float64)         //set metric value
 	Metric() prometheus.Metric //get metric object
 }
 
